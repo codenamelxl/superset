@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import Icons from 'src/components/Icons';
+import { Icons } from 'src/components/Icons';
+import { css, useTheme } from '@superset-ui/core';
 import { IconTooltip, Props } from '.';
 
 export default {
@@ -38,13 +39,21 @@ const PLACEMENTS = [
   'topRight',
 ];
 
-export const InteractiveIconTooltip = (args: Props) => (
-  <div css={{ margin: '40px 70px' }}>
-    <IconTooltip {...args}>
-      <Icons.Info />
-    </IconTooltip>
-  </div>
-);
+export const InteractiveIconTooltip = (args: Props) => {
+  const theme = useTheme();
+
+  return (
+    <div
+      css={css`
+        margin: ${theme.gridUnit * 10}px ${theme.gridUnit * 17.5}px;
+      `}
+    >
+      <IconTooltip {...args}>
+        <Icons.InfoCircleOutlined />
+      </IconTooltip>
+    </div>
+  );
+};
 
 InteractiveIconTooltip.args = {
   tooltip: 'Tooltip',

@@ -17,7 +17,14 @@
  * under the License.
  */
 import { FeatureFlag, isFeatureEnabled } from '@superset-ui/core';
-import { lazy, ComponentType, ComponentProps } from 'react';
+import {
+  lazy,
+  ComponentType,
+  ComponentProps,
+  LazyExoticComponent,
+} from 'react';
+import { isUserAdmin } from 'src/dashboard/util/permissionUtils';
+import getBootstrapData from 'src/utils/getBootstrapData';
 
 // not lazy loaded since this is the home page.
 import Home from 'src/pages/Home';
@@ -123,6 +130,17 @@ const RowLevelSecurityList = lazy(
     ),
 );
 
+const RolesList = lazy(
+  () => import(/* webpackChunkName: "RolesList" */ 'src/pages/RolesList'),
+);
+
+const UsersList: LazyExoticComponent<any> = lazy(
+  () => import(/* webpackChunkName: "UsersList" */ 'src/pages/UsersList'),
+);
+const ActionLogList: LazyExoticComponent<any> = lazy(
+  () => import(/* webpackChunkName: "ActionLogList" */ 'src/pages/ActionLog'),
+);
+
 type Routes = {
   path: string;
   Component: ComponentType;
@@ -225,6 +243,10 @@ export const routes: Routes = [
     path: '/sqllab/',
     Component: SqlLab,
   },
+  {
+    path: '/actionlog/list',
+    Component: ActionLogList,
+  },
 ];
 
 if (isFeatureEnabled(FeatureFlag.TaggingSystem)) {
@@ -236,6 +258,22 @@ if (isFeatureEnabled(FeatureFlag.TaggingSystem)) {
     path: '/superset/tags/',
     Component: Tags,
   });
+}
+
+const user = getBootstrapData()?.user;
+const isAdmin = isUserAdmin(user);
+
+if (isAdmin) {
+  routes.push(
+    {
+      path: '/roles/',
+      Component: RolesList,
+    },
+    {
+      path: '/users/',
+      Component: UsersList,
+    },
+  );
 }
 
 const frontEndRoutes: Record<string, boolean> = routes
